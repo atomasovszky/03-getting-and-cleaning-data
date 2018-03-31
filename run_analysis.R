@@ -12,7 +12,7 @@ list.files("UCI HAR Dataset/test")
 
 feature_file <- "UCI HAR Dataset/features.txt"
 features <- read.table(feature_file)
-names(features) <- c("index", "name")
+names(features) <- c("id", "name")
 relevant_cols <- features[grepl("mean\\(|std\\(", features$name), ]
 
 activity_file <- "UCI HAR Dataset/activity_labels.txt"
@@ -33,30 +33,29 @@ train_list <- lapply(train_files, function(train_file) {
 sapply(train_list, str)
 
 
-intersect(
-  unique(test_list[[1]][[1]]),
-  unique(train_list[[1]][[1]])
-) # no intersection between the subjects in train and test
 
-
-
-# BINDING COLUMNS TOGETHER ----------------------------------------------------------------------------------------
+# SELECTING RELEVANT COLUMNS AND BINDING THEM TOGETHER ------------------------------------------------------------
 
 test <- cbind(
   test_list[[1]],
-  setNames(test_list[[2]][, relevant_cols$index], relevant_cols$name),
+  setNames(test_list[[2]][, relevant_cols$id], relevant_cols$name),
   test_list[[3]]
 )
 
 train <- cbind(
   train_list[[1]],
-  setNames(train_list[[2]][, relevant_cols$index], relevant_cols$name),
+  setNames(train_list[[2]][, relevant_cols$id], relevant_cols$name),
   train_list[[3]]
 )
 
 
 
 # MERGING TEST AND TRAIN ------------------------------------------------------------------------------------------
+
+intersect(
+  unique(test$V1),
+  unique(train$V1)
+) # no intersection between the subjects in train and test
 
 data <- rbind(train, test)
 
